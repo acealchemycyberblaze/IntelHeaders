@@ -14,7 +14,7 @@ to enjoy the "fruits of our labor" and avoid the arduous chore of copy-pasting f
 Intel spec on every new project.
 
 We are happy to accept contibutions, just make sure you follow the code conventions, 
-specify in a comment from where you got the structures/constant and of course add 
+specify in a comment from where you got the structure/constant and of course add 
 yourself to the contibuters.txt file :)
 
 # License
