@@ -24,5 +24,8 @@
     <ClInclude Include="include\paging64.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\VT-d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

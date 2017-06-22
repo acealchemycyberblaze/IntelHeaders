@@ -22,6 +22,7 @@
     <ClInclude Include="include\cr64.h" />
     <ClInclude Include="include\msr64.h" />
     <ClInclude Include="include\paging64.h" />
+    <ClInclude Include="include\VT-d.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{99B7310B-035B-4936-8F79-6D71E1E51FB9}</ProjectGuid>
