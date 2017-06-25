@@ -391,6 +391,70 @@ typedef enum _MSR_CODE
 	MSR_CODE_IA32_TSC_AUX = 0xC0000103,
 } MSR_CODE, *PMSR_CODE;
 
+// MSR_CODE_IA32_FEATURE_CONTROL = 0x3A
+// Table 5-1. Layout of IA32_FEATURE_CONTROL
+typedef union _IA32_FEATURE_CONTROL
+{
+	UINT64 LockBit : 1;			// 0		If the lock bit is clear, an attempt to execute
+								//			VMXON will cause a #GP fault
+	UINT64 VmxInSmx : 1;		// 1		Enables VMX in SMX operation
+	UINT64 VmxOutsideSmx : 1;	// 2		Enables VMX outside SMX operation
+	UINT64 reserved0 : 5;		// 3-7
+	UINT64 SenterLocals : 7;	// 8-14		Enabled functionality of the SENTER leaf function
+	UINT64 SenterGlobal : 1;	// 15		Global enable of all SENTER functionalities
+	UINT64 reserved1 : 48;		// 16-63
+} IA32_FEATURE_CONTROL, *PIA32_FEATURE_CONTROL;
+C_ASSERT(sizeof(UINT64) == sizeof(IA32_FEATURE_CONTROL));
+
+// MSR_CODE_IA32_MTRRCAP = 0xFE
+// Table 35-2. IA-32 Architectural MSRs 
+typedef union _IA32_MTRRCAP
+{
+	UINT64 qwValue;
+	struct
+	{
+		UINT64 vcnt : 8;			// 0-7	The number of variable memory type ranges 
+									//		in the processor.
+		UINT64 fixed : 1;			// 8	Fixed range MTRRs are supported when set.
+		UINT64 reserved0 : 1;		// 9
+		UINT64 wc : 1;				// 10	WC Supported when set
+		UINT64 smrr : 1;			// 11	SMRR Supported when set
+		UINT64 reserved1 : 52;		// 12-63
+	};	
+} IA32_MTRRCAP, *PIA32_MTRRCAP;
+C_ASSERT(sizeof(UINT64) == sizeof(IA32_MTRRCAP));
+
+// MSR_CODE_IA32_MTRR_PHYSBASE0 = 0x200
+// Table 11-9. Address Mapping for Fixed-Range MTRRs
+typedef union _IA32_MTRR_PHYSBASE
+{
+	UINT64 qwValue;
+	struct
+	{
+		UINT64 type : 8;		// 0-7		Memory type for the range 
+		UINT64 reserved0 : 4;	// 8-11
+		UINT64 PhysBase : 36;	// 12-47	Base address of the address range
+		UINT64 reserved1 : 16;	// 48-63
+	};
+} IA32_MTRR_PHYSBASE, *PIA32_MTRR_PHYSBASE;
+C_ASSERT(sizeof(UINT64) == sizeof(IA32_MTRR_PHYSBASE));
+
+// MSR_CODE_IA32_MTRR_PHYSMASK0 = 0x201
+// Figure 11-7. IA32_MTRR_PHYSBASEn and IA32_MTRR_PHYSMASKn Variable-Range Register Pair
+typedef union _IA32_MTRR_PHYSMASK
+{
+	UINT64 qwValue;
+	struct
+	{
+		UINT64 reserved0 : 11;	// 0-10
+		UINT64 enabled : 1;		// 11		Enables the register pair when set
+		UINT64 PhysMask : 36;	// 12-47	Determines the range of the region being mapped
+		UINT64 reserved1 : 16;	// 48-63
+	};
+} IA32_MTRR_PHYSMASK, *PIA32_MTRR_PHYSMASK;
+C_ASSERT(sizeof(UINT64) == sizeof(IA32_MTRR_PHYSMASK));
+
+// MSR_CODE_IA32_PAT = 0x277
 // Table 11-10. Memory Types That Can Be Encoded With PAT
 typedef enum _IA32_PAT_MEMTYPE
 {
@@ -408,7 +472,6 @@ typedef enum _IA32_PAT_MEMTYPE
 typedef union _IA32_PAT
 {
 	UINT64 qwValue;
-	
 	struct {
 		UINT64 pa0 : 3;			// 0-2
 		UINT64 reserved0 : 5;	// 3-7
@@ -430,29 +493,13 @@ typedef union _IA32_PAT
 } IA32_PAT, *PIA32_PAT;
 C_ASSERT(sizeof(UINT64) == sizeof(IA32_PAT));
 
-typedef union _IA32_EFER
-{
-	UINT64 qwValue;
-
-	struct {
-		UINT64 sce : 1;			// 0	Enables SYSCALL/SYSRET instructions in 64bit
-		UINT64 reserved0 : 7;	// 1-7	
-		UINT64 lme : 1;			// 8	Enables IA-32e mode operation
-		UINT64 reserved1 : 1;	// 9	
-		UINT64 lma : 1;			// 10	Indicates IA-32e mode is active when set
-		UINT64 nxe : 1;			// 11	Execute Disable Bit Enable
-		UINT64 reserved2 : 52;	// 12-63
-	};
-} IA32_EFER, *PIA32_EFER;
-C_ASSERT(sizeof(UINT64) == sizeof(IA32_EFER));
-
+// MSR_CODE_IA32_VMX_EPT_VPID_CAP = 0x48C
 // A.10 VPID AND EPT CAPABILITIES
 // reports information about the capabilities of the logical processor with regard 
 // to virtual-processor identifiers (VPIDs) and extended page tables (EPT)
 typedef union _IA32_VMX_EPT_VPID_CAP
 {
 	UINT64 qwValue;
-
 	struct {
 		UINT64 allowExecOnly : 1;	// 0	allows bits 2:0 of PTE to be 100b
 									//		(indicating an execute - only translation)
@@ -482,5 +529,21 @@ typedef union _IA32_VMX_EPT_VPID_CAP
 	};
 } IA32_VMX_EPT_VPID_CAP, *PIA32_VMX_EPT_VPID_CAP;
 C_ASSERT(sizeof(UINT64) == sizeof(IA32_VMX_EPT_VPID_CAP));
+
+// MSR_CODE_IA32_EFER = 0xC0000080
+typedef union _IA32_EFER
+{
+	UINT64 qwValue;
+	struct {
+		UINT64 sce : 1;			// 0	Enables SYSCALL/SYSRET instructions in 64bit
+		UINT64 reserved0 : 7;	// 1-7	
+		UINT64 lme : 1;			// 8	Enables IA-32e mode operation
+		UINT64 reserved1 : 1;	// 9	
+		UINT64 lma : 1;			// 10	Indicates IA-32e mode is active when set
+		UINT64 nxe : 1;			// 11	Execute Disable Bit Enable
+		UINT64 reserved2 : 52;	// 12-63
+	};
+} IA32_EFER, *PIA32_EFER;
+C_ASSERT(sizeof(UINT64) == sizeof(IA32_EFER));
 
 #endif /* __INTEL_MSR64_H__ */

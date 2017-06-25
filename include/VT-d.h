@@ -21,8 +21,8 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 *
-* @file		cr64.h
-* @section	Intel x64 Control Registers
+* @file		VT-d.h
+* @section	Intel VT-d structures and constants
 */
 
 #ifndef __INTEL_VTD_H__
