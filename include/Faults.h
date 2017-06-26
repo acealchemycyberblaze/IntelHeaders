@@ -28,9 +28,10 @@
 #ifndef __INTEL_FAULTS_H__
 #define __INTEL_FAULTS_H__
 
+// http://wiki.osdev.org/Exceptions
 typedef enum _FAULT_CODE
 {
-	DE_FAULT = 0,		// Divide - by - zero Error #DE
+	DE_FAULT = 0,		// Divide by zero Error #DE
 	DB_FAULT = 1,		// Debug Fault/Trap #DB
 	NMI_FAULT = 2,		// Non Maskable Interrupt
 	BP_FAULT = 3,		// Breakpoint #BP
@@ -39,14 +40,14 @@ typedef enum _FAULT_CODE
 	UD_FAULT = 6,		// Invalid Opcode #UD
 	NM_FAULT = 7,		// Device Not Available #NM
 	DF_FAULT = 8,		// Double Fault #DF
-	SO_FAULT = 9,		// Coprocessor Segment Overrun Fault
+	CSO_FAULT = 9,		// Coprocessor Segment Overrun Fault
 	TS_FAULT = 10,		// Invalid TSS #TS
 	NP_FAULT = 11,		// Segment Not Present #NP
-	SS_FAULT = 12,		// Stack - Segment Fault #SS
+	SS_FAULT = 12,		// Stack Segment Fault #SS
 	GP_FAULT = 13,		// General Protection Fault #GP
 	PF_FAULT = 14,		// Page Fault #PF
 	// 15 Reserved
-	MF_FAULT = 16,		// x87 Floating - Point Exception
+	MF_FAULT = 16,		// x87 Floating - Point Exception #MF
 	AC_FAULT = 17,		// Alignment Check Fault #AC
 	MC_FAULT = 18,		// Machine Check #MC
 	XM_FAULT = 19,		// SIMD Floating - Point Exception #XM / #XF
