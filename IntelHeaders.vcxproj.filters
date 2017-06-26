@@ -30,5 +30,13 @@
     <ClInclude Include="include\VT-d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Faults.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\VT-x.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

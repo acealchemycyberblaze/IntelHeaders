@@ -22,7 +22,7 @@
 * SOFTWARE.
 *
 * @file		VT-x.h
-* @section	Intel VT-x structures and constants
+* @section	Intel VT-x structures, constants and utility functions and macros
 */
 
 #ifndef __INTEL_VT_X_H__
@@ -33,6 +33,10 @@
 
 #include "msr64.h"
 #include "cr64.h"
+
+// Disable 'warning C4214: nonstandard extension used: bit field types other than int'
+#pragma warning(push)
+#pragma warning( disable : 4214)
 
 // Vol 3B, Table 21-16. Structure of VMCS Component Encoding
 typedef union _VMCS_COMPONENT_ENCODING
@@ -49,12 +53,12 @@ C_ASSERT(sizeof(UINT32) == sizeof(VMCS_COMPONENT_ENCODING));
 // Vol 3B, APPENDIX H FIELD ENCODING IN VMCS
 typedef enum _VMCS_FIELD_ENCODING
 {
-	// Table H-1. Encoding for 16-Bit Control Fields (0000_00xx_xxxx_xxx0B)
+	// Vol 3B, Table H-1. Encoding for 16-Bit Control Fields (0000_00xx_xxxx_xxx0B)
 	VMCS_FIELD_VPID = 0x00000000,
 	VMCS_FIELD_POSTED_INTR_NOTIFICATION_VECTOR = 0x00000002,
 	VMCS_FIELD_EPTP_INDEX = 0x00000004,
 
-	// Table H-2. Encodings for 16-Bit Guest-State Fields (0000_10xx_xxxx_xxx0B)
+	// Vol 3B, Table H-2. Encodings for 16-Bit Guest-State Fields (0000_10xx_xxxx_xxx0B)
 	VMCS_FIELD_GUEST_ES_SELECTOR = 0x00000800,
 	VMCS_FIELD_GUEST_CS_SELECTOR = 0x00000802,
 	VMCS_FIELD_GUEST_SS_SELECTOR = 0x00000804,
@@ -66,7 +70,7 @@ typedef enum _VMCS_FIELD_ENCODING
 	VMCS_FIELD_GUEST_INTR_STATUS = 0x00000810,
 	VMCS_FIELD_GUEST_PML_INDEX = 0x00000812,
 
-	// Table H-3. Encodings for 16-Bit Host-State Fields (0000_11xx_xxxx_xxx0B)
+	// Vol 3B, Table H-3. Encodings for 16-Bit Host-State Fields (0000_11xx_xxxx_xxx0B)
 	VMCS_FIELD_HOST_ES_SELECTOR = 0x00000c00,
 	VMCS_FIELD_HOST_CS_SELECTOR = 0x00000c02,
 	VMCS_FIELD_HOST_SS_SELECTOR = 0x00000c04,
@@ -75,7 +79,7 @@ typedef enum _VMCS_FIELD_ENCODING
 	VMCS_FIELD_HOST_GS_SELECTOR = 0x00000c0a,
 	VMCS_FIELD_HOST_TR_SELECTOR = 0x00000c0c,
 
-	// Table H-3. Encodings for 16-Bit Host-State Fields (0000_11xx_xxxx_xxx0B)
+	// Vol 3B, Table H-3. Encodings for 16-Bit Host-State Fields (0000_11xx_xxxx_xxx0B)
 	VMCS_FIELD_IO_BITMAP_A_FULL = 0x00002000,
 	VMCS_FIELD_IO_BITMAP_A_HIGH = 0x00002001,
 	VMCS_FIELD_IO_BITMAP_B_FULL = 0x00002002,
@@ -119,11 +123,11 @@ typedef enum _VMCS_FIELD_ENCODING
 	VMCS_FIELD_TSC_MULTIPLIER_FULL = 0x00002032,
 	VMCS_FIELD_TSC_MULTIPLIER_HIGH = 0x00002033,
 	
-	// Table H-5. Encodings for 64-Bit Read-Only Data Field (0010_01xx_xxxx_xxxAb)
+	// Vol 3B, Table H-5. Encodings for 64-Bit Read-Only Data Field (0010_01xx_xxxx_xxxAb)
 	VMCS_FIELD_GUEST_PHYSICAL_ADDRESS_FULL = 0x00002400,
 	VMCS_FIELD_GUEST_PHYSICAL_ADDRESS_HIGH = 0x00002401,
 	
-	// Table H-6. Encodings for 64-Bit Guest-State Fields (0010_10xx_xxxx_xxxAb)
+	// Vol 3B, Table H-6. Encodings for 64-Bit Guest-State Fields (0010_10xx_xxxx_xxxAb)
 	VMCS_FIELD_VMCS_LINK_POINTER_FULL = 0x00002800,
 	VMCS_FIELD_VMCS_LINK_POINTER_HIGH = 0x00002801,
 	VMCS_FIELD_GUEST_IA32_DEBUGCTL_FULL = 0x00002802,
@@ -145,7 +149,7 @@ typedef enum _VMCS_FIELD_ENCODING
 	VMCS_FIELD_GUEST_BNDCFGS_FULL = 0x00002812,
 	VMCS_FIELD_GUEST_BNDCFGS_HIGH = 0x00002813,
 	
-	// Table H-7. Encodings for 64-Bit Host-State Fields (0010_11xx_xxxx_xxxAb)
+	// Vol 3B, Table H-7. Encodings for 64-Bit Host-State Fields (0010_11xx_xxxx_xxxAb)
 	VMCS_FIELD_HOST_PAT_FULL = 0x00002c00,
 	VMCS_FIELD_HOST_PAT_HIGH = 0x00002c01,
 	VMCS_FIELD_HOST_EFER_FULL = 0x00002c02,
@@ -173,7 +177,7 @@ typedef enum _VMCS_FIELD_ENCODING
 	VMCS_FIELD_PLE_GAP = 0x00004020,
 	VMCS_FIELD_PLE_WINDOW = 0x00004022,
 
-	// Table H-9. Encodings for 32-Bit Read-Only Data Fields (0100_01xx_xxxx_xxx0B)
+	// Vol 3B, Table H-9. Encodings for 32-Bit Read-Only Data Fields (0100_01xx_xxxx_xxx0B)
 	VMCS_FIELD_VM_INSTRUCTION_ERROR = 0x00004400,
 	VMCS_FIELD_VM_EXIT_REASON = 0x00004402,
 	VMCS_FIELD_VM_EXIT_INTR_INFO = 0x00004404,
@@ -183,7 +187,7 @@ typedef enum _VMCS_FIELD_ENCODING
 	VMCS_FIELD_VM_EXIT_INSTRUCTION_LEN = 0x0000440c,
 	VMCS_FIELD_VMX_INSTRUCTION_INFO = 0x0000440e,
 
-	// Table H-10. Encodings for 32-Bit Guest-State Fields (0100_10xx_xxxx_xxx0B)
+	// Vol 3B, Table H-10. Encodings for 32-Bit Guest-State Fields (0100_10xx_xxxx_xxx0B)
 	VMCS_FIELD_GUEST_ES_LIMIT = 0x00004800,
 	VMCS_FIELD_GUEST_CS_LIMIT = 0x00004802,
 	VMCS_FIELD_GUEST_SS_LIMIT = 0x00004804,
@@ -208,10 +212,10 @@ typedef enum _VMCS_FIELD_ENCODING
 	VMCS_FIELD_GUEST_SYSENTER_CS = 0x0000482a,
 	VMCS_FIELD_GUEST_PREEMPTION_TIMER = 0x0000482e,
 
-	// Table H-11. Encoding for 32-Bit Host-State Field (0100_11xx_xxxx_xxx0B)
+	// Vol 3B, Table H-11. Encoding for 32-Bit Host-State Field (0100_11xx_xxxx_xxx0B)
 	VMCS_FIELD_HOST_SYSENTER_CS = 0x00004c00,
 
-	// Table H-12. Encodings for Natural-Width Control Fields (0110_00xx_xxxx_xxx0B)
+	// Vol 3B, Table H-12. Encodings for Natural-Width Control Fields (0110_00xx_xxxx_xxx0B)
 	VMCS_FIELD_CR0_GUEST_HOST_MASK = 0x00006000,
 	VMCS_FIELD_CR4_GUEST_HOST_MASK = 0x00006002,
 	VMCS_FIELD_CR0_READ_SHADOW = 0x00006004,
@@ -221,7 +225,7 @@ typedef enum _VMCS_FIELD_ENCODING
 	VMCS_FIELD_CR3_TARGET_VALUE2 = 0x0000600c,
 	VMCS_FIELD_CR3_TARGET_VALUE3 = 0x0000600e,
 
-	// Table H-13. Encodings for Natural-Width Read-Only Data Fields (0110_01xx_xxxx_xxx0B)
+	// Vol 3B, Table H-13. Encodings for Natural-Width Read-Only Data Fields (0110_01xx_xxxx_xxx0B)
 	VMCS_FIELD_EXIT_QUALIFICATION = 0x00006400,
 	VMCS_FIELD_IO_RCX = 0x00006402,
 	VMCS_FIELD_IO_RSI = 0x00006404,
@@ -229,7 +233,7 @@ typedef enum _VMCS_FIELD_ENCODING
 	VMCS_FIELD_IO_RIP = 0x00006408,
 	VMCS_FIELD_GUEST_LINEAR_ADDRESS = 0x0000640a,
 
-	// Table H-14. Encodings for Natural-Width Guest-State Fields (0110_10xx_xxxx_xxx0B)
+	// Vol 3B, Table H-14. Encodings for Natural-Width Guest-State Fields (0110_10xx_xxxx_xxx0B)
 	VMCS_FIELD_GUEST_CR0 = 0x00006800,
 	VMCS_FIELD_GUEST_CR3 = 0x00006802,
 	VMCS_FIELD_GUEST_CR4 = 0x00006804,
@@ -251,7 +255,7 @@ typedef enum _VMCS_FIELD_ENCODING
 	VMCS_FIELD_GUEST_SYSENTER_ESP = 0x00006824,
 	VMCS_FIELD_GUEST_SYSENTER_EIP = 0x00006826,
 	
-	// Table H-15. Encodings for Natural-Width Host-State Fields (0110_11xx_xxxx_xxx0B)
+	// Vol 3B, Table H-15. Encodings for Natural-Width Host-State Fields (0110_11xx_xxxx_xxx0B)
 	VMCS_FIELD_HOST_CR0 = 0x00006c00,
 	VMCS_FIELD_HOST_CR3 = 0x00006c02,
 	VMCS_FIELD_HOST_CR4 = 0x00006c04,
@@ -266,7 +270,7 @@ typedef enum _VMCS_FIELD_ENCODING
 	VMCS_FIELD_HOST_RIP = 0x00006c16,
 } VMCS_FIELD_ENCODING, *PVMCS_FIELD_ENCODING;
 
-// Table I-1. Basic Exit Reasons
+// Vol 3B, Table I-1. Basic Exit Reasons
 typedef enum _VMEXIT_REASON
 {
 	VMEXIT_REASON_EXCEPTION_NMI = 0,
@@ -332,6 +336,166 @@ typedef enum _VMEXIT_REASON
 	VMEXIT_REASONS_MAX
 } VMEXIT_REASON, *PVMEXIT_REASON;
 
+// Vol 3B, Table 21-5. Definitions of Pin-Based VM-Execution Controls
+typedef struct _VMX_PINBASED_CTLS
+{
+	UINT32 ExternalIntExit : 1;		// 0	External interrupts cause VM exits
+	UINT32 reserved0 : 2;			// 1-2
+	UINT32 NmiExit : 1;				// 3	Non-maskable interrupts (NMIs) cause VM exits
+	UINT32 reserved1 : 1;			// 4
+	UINT32 VirtNmiExit : 1;			// 5	NMIs are never blocked and the "blocking by NMI"
+									//		bit(bit 3) in the interruptibility - state field 
+									//		indicates "virtual - NMI blocking"
+	UINT32 PreemptionTimer : 1;		// 6	Use VMX-preemption timer counts down in VMX non-root operation
+	UINT32 reserved2 : 25;			// 7-31
+} VMX_PINBASED_CTLS, *PVMX_PINBASED_CTLS;
+C_ASSERT(sizeof(UINT32) == sizeof(VMX_PINBASED_CTLS));
+
+// Vol 3B, Table 21-6. Definitions of Primary Processor-Based VM-Execution Controls
+typedef struct _VMX_PROCBASED_CTLS
+{
+	UINT32 reserved0 : 2;		// 0-1
+	UINT32 IntWindowExit : 1;	// 2		A VM exit occurs at the beginning of any instruction 
+								//			if RFLAGS.IF = 1
+	UINT32 UseTscOffseting : 1; // 3		RDTSC, RDTSCP and IA32_TIME_STAMP_COUNTER MSR return 
+								//			a value modified by the TSC offset field
+	UINT32 reserved1 : 3;		// 4-6
+	UINT32 HltExit : 1;			// 7		HLT causes a VM exit
+	UINT32 reserved2 : 1;		// 8
+	UINT32 InvlpgExit : 1;		// 9		INVLPG causes a VM exit
+	UINT32 MwaitExit : 1;		// 10		MWAIT causes a VM exit
+	UINT32 RdpmcExit : 1;		// 11		RDPMC causes a VM exit
+	UINT32 RdtscExit : 1;		// 12		RDTSC causes a VM exit
+	UINT32 reserved3 : 2;		// 13-14
+	UINT32 Cr3LoadExit : 1;		// 15		MOV to CR3 causes a VM exit
+	UINT32 Cr3StoreExit : 1;	// 16		MOV from CR3 causes a VM exit
+	UINT32 reserved4 : 2;		// 17-18
+	UINT32 Cr8LoadExit : 1;		// 19		MOV to CR8 causes a VM exit
+	UINT32 Cr8StoreExit : 1;	// 20		MOV from CR8 causes a VM exit
+	UINT32 UseTprShadow : 1;	// 21		Activates the TPR shadow
+	UINT32 NmiWindowExit : 1;	// 22		VM exit occurs at the beginning of any instruction
+								//			if there is no virtual - NMI blocking
+	UINT32 MovDrExit : 1;		// 23		MOV to/from DR causes a VM exit
+	UINT32 UncondIoExit : 1;	// 24		I/O instruction cause a VM exit, ignored if using I/O bitmaps
+	UINT32 UseIoBitmaps : 1;	// 25		Use I/O bitmaps
+	UINT32 reserved5 : 1;		// 26
+	UINT32 MonitorTrapFlag : 1; // 27		Monitor trap flag debugging feature is enabled
+	UINT32 UseMsrBitmaps : 1;	// 28		Use MSR bitmaps
+	UINT32 MonitorExit : 1;		// 29		MONITOR causes a VM exit
+	UINT32 PauseExit : 1;		// 30		PAUSE causes a VM exit
+	UINT32 UseProcbased2 : 1;	// 31		Determines whether to use VMX_PROCBASED_CTLS2 or not
+} VMX_PROCBASED_CTLS, *PVMX_PROCBASED_CTLS;
+C_ASSERT(sizeof(UINT32) == sizeof(VMX_PROCBASED_CTLS));
+
+// Vol 3B, Table 21-7. Definitions of Secondary Processor-Based VM-Execution Controls
+typedef struct _VMX_PROCBASED_CTLS2
+{
+	UINT32 VirtApicAccess : 1;		// 0		a VM exit occurs on any attempt to access
+									//			data on the page with the APIC - access address
+	UINT32 EnableEpt : 1;			// 1		Enable Extended Page Tables
+	UINT32 DescriptorTableExit : 1; // 2		LGDT, LIDT, LLDT, LTR, SGDT, SIDT, SLDT, and STR cause VM exits
+	UINT32 EnableRdtscp : 1;		// 3		When clear RTSCP causes an Invalid Opcode fault
+	UINT32 VirtX2ApicAccess : 1;	// 4		Causes RDMSR and WRMSR to IA32_X2APIC_TPR to use the TPR shadow
+	UINT32 EnableVpid : 1;			// 5		cached translations of linear addresses 
+									//			are associated with a virtual - processor identifier
+	UINT32 WbinvdExit : 1;			// 6		WBINVD causes a VM exit
+	UINT32 UnrestrictedGuest : 1;	// 7		Guest software may run in unpaged protected mode or 
+									//			in real - address mode
+	UINT32 reserved0 : 2;			// 8-9
+	UINT32 PauseLoopExit : 1;		// 10		A series of executions of PAUSE can cause a VM exit
+	UINT32 reserved1 : 21;			// 11-31
+} VMX_PROCBASED_CTLS2, *PVMX_PROCBASED_CTLS2;
+C_ASSERT(sizeof(UINT32) == sizeof(VMX_PROCBASED_CTLS2));
+
+// Vol 3B, Table 21-9. Definitions of VM-Exit Controls
+typedef struct _VMX_EXIT_CTLS
+{
+	UINT32 reserved0 : 2;				// 0-1
+	UINT32 SaveDebugControls : 1;		// 2		DR7 and the IA32_DEBUGCTL MSR are saved on VM exit
+	UINT32 reserved1 : 6;				// 3-8
+	UINT32 IsHost64bit : 1;				// 9		Is host in 64bit mode
+	UINT32 reserved2 : 2;				// 10-11
+	UINT32 LoadIa32PerfGlobalCtrl : 1;	// 12		IA32_PERF_GLOBAL_CTRL MSR is loaded on VM exit
+	UINT32 reserved3 : 2;				// 13-14
+	UINT32 AckIntOnExit : 1;			// 15		Acknowledge the interrupt, acquiring the vector data
+	UINT32 reserved4 : 2;				// 16-17
+	UINT32 SaveIa32Pat : 1;				// 18		IA32_PAT MSR is saved on VM exit
+	UINT32 LoadIa32Pat : 1;				// 19		IA32_PAT MSR is loaded on VM exit
+	UINT32 SaveIa32Efer : 1;			// 20		IA32_EFER MSR is saved on VM exit
+	UINT32 LoadIa32Efer : 1;			// 21		IA32_EFER MSR is loaded on VM exit
+	UINT32 SavePreemtptionTimer : 1;	// 22		Save the current value of VMX preemption timer
+	UINT32 reserved5 : 9;				// 23-31
+} VMX_EXIT_CTLS, *PVMX_EXIT_CTLS;
+C_ASSERT(sizeof(UINT32) == sizeof(VMX_EXIT_CTLS));
+
+// Vol 3B, Table 21-11. Definitions of VM-Entry Controls
+typedef struct _VMX_ENTRY_CTLS
+{
+	UINT32 reserved0 : 2;				// 0-1
+	UINT32 LoadDebugControls : 1;		// 2	DR7 and the IA32_DEBUGCTL MSR are loaded on VM exit
+	UINT32 reserved1 : 6;				// 3-8
+	UINT32 IsGuest64bit : 1;			// 9	Is guest in 64bit mode
+	UINT32 EnterSmm : 1;				// 10	Is guest in SMM mode
+	UINT32 DisableDualMonitor : 1;		// 11	Restore default behavior for SMM after VM entry
+	UINT32 reserved2 : 1;				// 12
+	UINT32 LoadIa32PerfGlobalCtrl : 1;	// 13	IA32_PERF_GLOBAL_CTRL MSR is loaded on VM entry
+	UINT32 LoadIa32Pat : 1;				// 14	IA32_PAT is loaded on VM entry
+	UINT32 LoadIa32Efer : 1;			// 15	IA32_EFER is loaded on VM entry
+	UINT32 reserved3 : 16;				// 16-31
+} VMX_ENTRY_CTLS, *PVMX_ENTRY_CTLS;
+C_ASSERT(sizeof(UINT32) == sizeof(VMX_ENTRY_CTLS));
+
+// Vol 3B, 21.6.3 Exception Bitmap
+typedef struct _VMX_EXCEPTION_BITMAP
+{
+	UINT32 DE : 1;			// 0	Divide - by - zero Error #DE
+	UINT32 DB : 1;			// 1	Debug Fault/Trap #DB
+	UINT32 NMI : 1;			// 2	Non Maskable Interrupt
+	UINT32 BP : 1;			// 3	Breakpoint #BP
+	UINT32 OF : 1;			// 4	Overflow #OF
+	UINT32 BR : 1;			// 5	Bound Range Exceeded #BR
+	UINT32 UD : 1;			// 6	Invalid Opcode #UD
+	UINT32 NM : 1;			// 7	Device Not Available #NM
+	UINT32 DF : 1;			// 8	Double Fault #DF
+	UINT32 SO : 1;			// 9	Coprocessor Segment Overrun Fault
+	UINT32 TS : 1;			// 10	Invalid TSS #TS
+	UINT32 NP : 1;			// 11	Segment Not Present #NP
+	UINT32 SS : 1;			// 12	Stack - Segment Fault #SS
+	UINT32 GP : 1;			// 13	General Protection Fault #GP
+	UINT32 PF : 1;			// 14	Page Fault #PF
+	UINT32 reserved0 : 1;	// 15
+	UINT32 MF : 1;			// 16	x87 Floating - Point Exception
+	UINT32 AC : 1;			// 17	Alignment Check Fault #AC
+	UINT32 MC : 1;			// 18	Machine Check #MC
+	UINT32 XM : 1;			// 19	SIMD Floating - Point Exception #XM / #XF
+	UINT32 VE : 1;			// 20	Virtualization Exception #VE
+	UINT32 reserved1 : 9;	// 21-29
+	UINT32 SX : 1;			// 30	Security Exception #SX
+	UINT32 reserved2 : 1;	// 31
+} VMX_EXCEPTION_BITMAP, *PVMX_EXCEPTION_BITMAP;
+C_ASSERT(sizeof(UINT32) == sizeof(VMX_EXCEPTION_BITMAP));
+
+// Vol 3B, 21.6.4 I/O-Bitmap Addresses
+typedef struct DECLSPEC_ALIGN(PAGE_SIZE) _VMX_IO_BITMAPS
+{
+	UINT8 tIoBitmapA[PAGE_SIZE]; // 0 - 0x7FFF
+	UINT8 tIoBitmapB[PAGE_SIZE]; // 0x8000 - 0xFFFF
+} VMX_IO_BITMAPS, *PVMX_IO_BITMAPS;
+C_ASSERT((2 * PAGE_SIZE) == sizeof(VMX_IO_BITMAPS));
+
+// Vol 3B, 21.6.9 MSR-Bitmap Address
+typedef struct DECLSPEC_ALIGN(PAGE_SIZE) _VMX_MSR_BITMAPS
+{
+	UINT8 tRdmsrL[PAGE_SIZE / 4]; // RDMSR 0 - 0x1FFF
+	UINT8 tRdmsrH[PAGE_SIZE / 4]; // RDMSR 0xC0000000 - 0xC0001FFF
+	UINT8 tWrmsrL[PAGE_SIZE / 4]; // WRMSR 0 - 0x1FFF
+	UINT8 tWrmsrH[PAGE_SIZE / 4]; // WRMSR 0xC0000000 - 0xC0001FFF
+} VMX_MSR_BITMAPS, *PVMX_MSR_BITMAPS;
+C_ASSERT(PAGE_SIZE == sizeof(VMX_MSR_BITMAPS));
+
+// TODO:	Add EPT structures. Vol 3B only contains EPTP and it's format
+//			seems to be different from other projects seen...
+
 typedef enum _VMX_OPCODE_RC
 {
 	VMX_SUCCESS = 0,	// Opcode succeeded
@@ -339,7 +503,7 @@ typedef enum _VMX_OPCODE_RC
 	VMX_ERROR_NO_INFO	// Opcode failed - no information available on error
 } VMX_OPCODE_RC, *PVMX_OPCODE_RC;
 
-// Table 30-1. VM-Instruction Error Numbers
+// Vol 3B, Table 30-1. VM-Instruction Error Numbers
 // Define VM_INSTRUCTION_ERROR enum and error message array using X-Macros
 #define VM_INSTRUCTION_ERRORS \
 		X(VMERROR_VMCALL_IN_ROOT, 1, "VMCALL executed in VMX root operation") \
@@ -376,12 +540,6 @@ typedef enum _VM_INSTRUCTION_ERROR
 	VM_INSTRUCTION_ERROR_MAX
 } VM_INSTRUCTION_ERROR, *PVM_INSTRUCTION_ERROR;
 
-LPCSTR g_VmInstructionErrorMessages[VM_INSTRUCTION_ERROR_MAX] = {
-#define X(EnumName,EnumValue,ErrorMsg) ErrorMsg,
-	VM_INSTRUCTION_ERRORS
-#undef X
-};
-
 /**
 * Get the error messages string for the VM instruction error
 * @param eVmError - value of VMCS_FIELD_VM_INSTRUCTION_ERROR after a VMX_ERROR
@@ -391,9 +549,55 @@ LPCSTR
 __inline
 VTX_GetVmInstructionErrorMsg(
 	_In_ const VM_INSTRUCTION_ERROR eVmError
-)
-{
-	return g_VmInstructionErrorMessages[eVmError];
-}
+);
 
+// Vol 3B, 27.5 VMM SETUP & TEAR DOWN
+/**
+* Adjust the value of CR0 according to the FIXED MSRs
+* to clear/set bits that the CPU doesn't/must support
+* @param ptCr0 - value to edit
+*/
+VOID
+__inline
+VmxAdjustCr0(
+	_Out_ PCR0_REG ptCr0
+);
+
+/**
+* Adjust the value of CR4 according to the FIXED MSRs
+* to clear/set bits that the CPU doesn't/must support
+* @param ptCr4 - value to edit
+*/
+VOID
+__inline
+VmxAdjustCr4(
+	_Out_ PCR4_REG ptCr4
+);
+
+/**
+* Adjust the value of the VMX execution control according to the MSR
+* to clear/set bits that the CPU doesn't/must support.
+* @param dwAdjustMsrCode - MSR code of MSR used to adjust the VMX control
+* @param pdwCtlValue - VMX execution control to adjust
+*/
+VOID
+__inline
+VmxAdjustCtl(
+	_In_	const UINT32	dwAdjustMsrCode,
+	_Out_	PUINT32			pdwCtlValue
+);
+
+// Vol 3B, 21.6 VM-EXECUTION CONTROL FIELDS
+#define VMX_ADJUST_PINBASED_CTLS(pdwCtlValue) \
+	VmxAdjustCtl(MSR_CODE_IA32_VMX_PINBASED_CTLS, (pdwCtlValue))
+#define VMX_ADJUST_PROCBASED_CTLS(pdwCtlValue) \
+	VmxAdjustCtl(MSR_CODE_IA32_VMX_PROCBASED_CTLS, (pdwCtlValue))
+#define VMX_ADJUST_PROCBASED_CTLS2(pdwCtlValue) \
+	VmxAdjustCtl(MSR_CODE_IA32_VMX_PROCBASED_CTLS2, (pdwCtlValue))
+#define VMX_ADJUST_EXIT_CTLS(pdwCtlValue) \
+	VmxAdjustCtl(MSR_CODE_IA32_VMX_EXIT_CTLS, (pdwCtlValue))
+#define VMX_ADJUST_ENTRY_CTLS(pdwCtlValue) \
+	VmxAdjustCtl(MSR_CODE_IA32_VMX_ENTRY_CTLS, (pdwCtlValue))
+
+#pragma warning(pop)
 #endif /* __INTEL_VT_X_H__ */

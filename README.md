@@ -15,11 +15,11 @@ Intel spec on every new project.
 
 We are happy to accept contibutions, just make sure you follow the code conventions, 
 specify in a comment from where you got the structure/constant and of course add 
-yourself to the contibuters.txt file :)
+yourself to the contibutors.txt file :)
 
 # License
 Code is under the MIT License unless the file header says otherwise.
 See LICENSE file for more info.
 
 # Contributers
-See contibuters.txt file
+See contibutors.txt file

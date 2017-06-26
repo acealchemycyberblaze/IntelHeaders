@@ -20,10 +20,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\cr64.h" />
+    <ClInclude Include="include\Faults.h" />
     <ClInclude Include="include\msr64.h" />
     <ClInclude Include="include\paging64.h" />
     <ClInclude Include="include\VT-x.h" />
     <ClInclude Include="include\VT-d.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\VT-x.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{99B7310B-035B-4936-8F79-6D71E1E51FB9}</ProjectGuid>
@@ -34,6 +38,7 @@
     <Platform Condition="'$(Platform)' == ''">Win32</Platform>
     <RootNamespace>IntelHeaders</RootNamespace>
     <DriverType>WDM</DriverType>
+    <WindowsTargetPlatformVersion>$(LatestTargetPlatformVersion)</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
@@ -54,7 +59,11 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup>
+    <IncludePath>$(SolutionDir)\include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)bin\$(ConfigurationName)\$(Platform)\</OutDir>
+    <IntDir>$(SolutionDir)bin\int\$(ConfigurationName)\$(Platform)\</IntDir>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

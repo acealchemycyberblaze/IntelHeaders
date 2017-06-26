@@ -30,6 +30,9 @@
 
 #include <ntddk.h>
 
+// Disable 'warning C4214: nonstandard extension used: bit field types other than int'
+#pragma warning(push)
+#pragma warning(disable : 4214)
 #pragma pack(push, 1)
 
 #define CAP_REG							0x8
@@ -244,5 +247,5 @@ static_assert(sizeof(PASID_ENTRY) == sizeof(UINT64), "PASID_ENTRY structure size
 static_assert(sizeof(PASID_STATE_ENTRY) == sizeof(UINT64), "PASID_STATE_ENTRY structure size mismatch!");
 
 #pragma pack(pop)
-
+#pragma warning(push)
 #endif /* __INTEL_VTD_H__ */

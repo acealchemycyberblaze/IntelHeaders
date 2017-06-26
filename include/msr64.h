@@ -30,6 +30,12 @@
 
 #include <ntddk.h>
 
+// Disable 'warning C4214: nonstandard extension used: bit field types other than int'
+// Disable 'warning C4201: nonstandard extension used: nameless struct/union'
+#pragma warning(push)
+#pragma warning(disable : 4214)
+#pragma warning(disable : 4201)
+
 // Table 35-2. IA-32 Architectural MSRs 
 typedef enum _MSR_CODE
 {
@@ -546,4 +552,5 @@ typedef union _IA32_EFER
 } IA32_EFER, *PIA32_EFER;
 C_ASSERT(sizeof(UINT64) == sizeof(IA32_EFER));
 
+#pragma warning(pop)
 #endif /* __INTEL_MSR64_H__ */

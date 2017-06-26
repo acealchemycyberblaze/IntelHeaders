@@ -1,3 +1,5 @@
 Project Contributors
 ===========================================
 Danny Li-on @ Viral Security Group
+Or Avner @ Viral Security Group
+Lev Aronsky @ Viral Security Group

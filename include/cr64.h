@@ -30,6 +30,12 @@
 
 #include <ntddk.h>
 
+// Disable 'warning C4214: nonstandard extension used: bit field types other than int'
+// Disable 'warning C4201: nonstandard extension used: nameless struct/union'
+#pragma warning(push)
+#pragma warning( disable : 4214)
+#pragma warning( disable : 4201)
+
 // Figure 2-7. Control Registers
 typedef union _CR0_REG
 {
@@ -106,4 +112,5 @@ typedef union _CR3_REG
 } CR3_REG, *PCR3_REG;
 C_ASSERT(sizeof(UINT64) == sizeof(CR3_REG));
 
+#pragma warning(pop)
 #endif /* __INTEL_CR64_H__ */
